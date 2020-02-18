@@ -1,5 +1,12 @@
 1. De applicatie dient in actieve en in batch vorm opgestart te kunnen worden
-
-Interactieve mode:
 2. In de actieve modus wordt de specificatie met behulp van een toetsenbord ingevoerd.
-3. De applicatie blijft net zo lang actief 
+3. De applicatie blijft net zo lang actief totdat "exit" als specificatie wordt ingevoerd.
+4. Een specificatie heeft de volgende vorm: [vorm][whitespace][kleur]
+5. Een vorm kan een van de volgende vormen zijn: cirkel, halve cirkel, vierkant, rechthoek of driehoek
+6. De volgende kleuren moeten worden herkend: rood, groen, blauw, geel, zwart en whitespace
+7. In de batch vorm moet een bestand uitgelezen kunnen worden met meerdere specificaties
+8. Het batch bestand kan comments bevatten die beginnen met een '#'
+9. In de interactieve modus moet het programma de contouren van de gevonden objecten markeren
+10. De x- en y coordinaten van het middelpunt worden in de interactieve 
+
+#TODO: AFMAKEN
