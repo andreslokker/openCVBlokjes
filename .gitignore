@@ -1,4 +1,8 @@
-
+application
+obj/
+pictures
+.vscode/
 .cproject
-
 .project
+
+*.o
