@@ -1,0 +1,5 @@
+1. De applicatie dient in actieve en in batch vorm opgestart te kunnen worden
+
+Interactieve mode:
+2. In de actieve modus wordt de specificatie met behulp van een toetsenbord ingevoerd.
+3. De applicatie blijft net zo lang actief 
