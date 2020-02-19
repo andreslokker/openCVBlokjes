@@ -9,6 +9,29 @@ int blockSize = 2;
 int apertureSize = 3;
 double k = 0.04;
 
+
+std::pair<uint16_t, uint16_t> findCenterPointImg(const std::vector<Point>& points) {
+    uint16_t minXValue = points.at(0).x;
+    uint16_t maxXValue = points.at(0).x;
+    uint16_t minYValue = points.at(0).y;
+    uint16_t maxYValue = points.at(0).y;
+
+    for(int i = 0; i < points.size(); i++) {
+        if(points.at(i).x < minXValue) {
+            minXValue = points.at(i).x;
+        } else if(points.at(i).x > maxXValue) {
+            maxXValue = points.at(i).x;
+        }
+
+        if(points.at(i).y < minYValue) {
+            minYValue = points.at(i).y;
+        } else if(points.at(i).y > maxYValue) {
+            maxYValue = points.at(i).y;
+        }
+    }
+    return std::pair<uint16_t, uint16_t>(minXValue + maxXValue - minXValue, minYValue + maxYValue - minYValue);
+}
+
 int main(int argc, char** argv) {
     namedWindow("normal picture");
     namedWindow("img detected");
@@ -47,12 +70,14 @@ int main(int argc, char** argv) {
     }
 
     for(int i = 0; i < imgCountours.size(); i++) {
-        for(int y = 0; y < imgCountours.at(i).size(); y++) {
-            std::cout << imgCountours.at(i).at(y) << std::endl;
+        if(imgCountours.at(i).size() >= 1) {
+            std::pair<uint16_t, uint16_t> centerPoint = findCenterPointImg(imgCountours.at(i));
+            std::cout << "Point:" << std::endl;
+            std::cout << centerPoint.first << std::endl;
+            std::cout << centerPoint.second << std::endl;
         }
-        std::cout << "end" << std::endl;
-        double area = contourArea(imgCountours.at(i));
-        std::cout << area << std::endl;
+        //double area = contourArea(imgCountours.at(i));
+        //std::cout << area << std::endl;
     }
     
     cvtColor(imgEdges, imgEdges, COLOR_GRAY2BGR);
