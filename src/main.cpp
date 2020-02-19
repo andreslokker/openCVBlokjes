@@ -79,6 +79,24 @@ int main(int argc, char** argv) {
         //double area = contourArea(imgCountours.at(i));
         //std::cout << area << std::endl;
     }
+
+    std::vector<Point> approx;
+
+    for(int i = 0; i < imgCountours.size(); i++) {
+        cv::approxPolyDP(cv::Mat(imgCountours[i]), approx, cv::arcLength(cv::Mat(imgCountours[i]), true)*0.02, true);
+
+		// Skip small or non-convex objects 
+		if (std::fabs(cv::contourArea(imgCountours[i])) < 100 || !cv::isContourConvex(approx))
+			continue;
+
+        if(approx.size() == 3) {
+            std::cout << "triangle" << std::endl;
+        } else if (approx.size() > 3 && approx.size() <= 6) {
+            std::cout << "vierkant" << std::endl;
+        } else {
+            std::cout << "circle" << std::endl;
+        }
+    }
     
     cvtColor(imgEdges, imgEdges, COLOR_GRAY2BGR);
     cvtColor(imgEdges, imgEdges, COLOR_BGR2HSV);
