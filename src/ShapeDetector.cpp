@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cmath>
 
-#define SQUARE_MARGE_PIXELS 10
+#define SQUARE_MARGE_PIXELS 5
 
 ShapeDetector::ShapeDetector() {
 
@@ -18,28 +18,24 @@ bool ShapeDetector::isCircle(std::vector<cv::Point>& approx) {
 }
 
 bool ShapeDetector::isSquare(std::vector<cv::Point>& approx) {
-    std::cout << approx.size() << std::endl;
     if(approx.size() >= 4) {
+        std::vector<double> foundValues;
         for(int i = 0; i < approx.size(); i++) {
-            std::vector<double> foundValues;
             for(int y = i+1; y < approx.size(); y++) {
-                if(i != y) {
-                    foundValues.push_back(cv::norm(cv::Mat(approx.at(i)), cv::Mat(approx.at(y))));
+                foundValues.push_back(cv::norm(cv::Mat(approx.at(i)), cv::Mat(approx.at(y))));
+            }
+        }
+
+        for(int y = 0; y < foundValues.size(); y++) {
+            int nrOfMatchingLength = 0;
+            for(int q = 0; q < foundValues.size(); q++) {
+                int lineDistance = ceil(foundValues.at(q) - foundValues.at(y));
+                if(lineDistance >= (-1 * SQUARE_MARGE_PIXELS) && lineDistance <= SQUARE_MARGE_PIXELS) {
+                    nrOfMatchingLength++;
                 }
             }
-
-            for(int y = 0; y < foundValues.size(); y++) {
-                int nrOfMatchingLength = 0;
-                for(int q = 0; q < foundValues.size(); q++) {
-                    int lineDistance = ceil(foundValues.at(q) - foundValues.at(y));
-                    std::cout << lineDistance << std::endl;
-                    if(lineDistance >= (-1 * SQUARE_MARGE_PIXELS) && lineDistance <= SQUARE_MARGE_PIXELS) {
-                        nrOfMatchingLength++;
-                    }
-                }
-                if(nrOfMatchingLength >= 4) {
-                    return true;
-                }
+            if(nrOfMatchingLength >= 4) {
+                return true;
             }
         }
     }
@@ -60,8 +56,10 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
 
         if(std::fabs(cv::contourArea(imgCountours.at(i)) >= 100) && 
         isContourConvex(approx)) {
-            if(typeOfShape == "square" && approx.size() >=4 && approx.size() <= 6 && isSquare(approx)) {
-                std::cout << "shape detected" << std::endl;
+            std::cout << approx.size() << std::endl;
+            if((approx.size() == 3 && typeOfShape == "triangle") ||
+            ((approx.size() >= 4 && approx.size() <= 6) && (typeOfShape == "square" && (isSquare(approx)) || (typeOfShape == "rectangle" && !isSquare(approx)))) ||
+            (approx.size() > 6)) { // circle or semi circel 
                 cv::Scalar color = cv::Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
                 drawContours(imageContours, imgCountours, (int)i, color, 2, cv::LINE_8, hierarchy, 0 );
             }
