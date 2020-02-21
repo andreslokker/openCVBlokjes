@@ -14,7 +14,7 @@ all: $(OBJDIR) $(TARGET)
 $(OBJDIR):
 	mkdir $(OBJDIR)
 
-$(OBJDIR)/%.o: $(SOURCE)
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(GCC) $(CPPFLAGS) -c $^ -o $@
 
 $(TARGET): $(OBJ)
