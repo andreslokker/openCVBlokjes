@@ -3,9 +3,9 @@
 
 std::string Configure::colors[NR_OF_COLORS] = {"red", "green", "blue", "yellow", "black", "white"};
 ColorConfiguration Configure::colorConfiguration[NR_OF_COLORS] = {};
-cv::Mat Configure::picture = cv::imread(cv::String("pictures/picture2.jpg"));
+cv::Mat Configure::picture;
 int Configure::currentSlider = 0;
-cv::Mat Configure::inRangePicture(picture.rows, picture.cols, picture.type());
+cv::Mat Configure::inRangePicture;
 
 Configure::Configure() {
 
@@ -28,6 +28,11 @@ void Configure::onTrackbar(int, void*) {
 }
 
 void Configure::startConfiguration() {
+    cv::VideoCapture cap;
+    int deviceID = 2;
+    cap.open(deviceID);
+    cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
+    cap.set(CV_CAP_PROP_FRAME_HEIGHT,720);
     for(int i = 0; i < NR_OF_COLORS; i++) {
         colorConfiguration[i].color = colors[i];
         std::string windowName = "configuring window " + colorConfiguration[i].color;
@@ -42,8 +47,13 @@ void Configure::startConfiguration() {
         std::cout << "press space to finish color: " << colorConfiguration[i].color << std::endl;
 
         while(true) {
+            cap.read(picture);
+            picture.copyTo(inRangePicture);
+            void* b;
+            onTrackbar(int(), b);
+
             cv::namedWindow("configuring window");
-            cv::imshow("configuring window", Configure::inRangePicture);
+            cv::imshow("configuring window", inRangePicture);
 
             char c = (char) cv::waitKey(30);
             if(c == ' ') {
@@ -54,4 +64,5 @@ void Configure::startConfiguration() {
 
         currentSlider++;
     }
+    cap.release();
 }

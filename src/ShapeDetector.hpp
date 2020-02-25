@@ -13,7 +13,8 @@ class ShapeDetector {
 
         bool isRectangle(std::vector<cv::Point>& approx);
         bool isSquare(std::vector<cv::Point>& approx);
-        bool isCircle(std::vector<cv::Point>& approx);
+        bool isCircle(std::vector<cv::Point>& approx, std::vector<cv::Vec3f>& circles);
+        bool isSemiCircle(std::vector<cv::Point>& approx, std::vector<cv::Vec3f>& circles);
         bool isSemiCircle(std::vector<cv::Point>& approx);
 
         /* 
