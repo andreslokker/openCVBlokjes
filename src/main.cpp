@@ -4,7 +4,8 @@
 #include "FileReader.hpp"
 #include <iostream>
 
-int main() {
+int main(int argc, char **argv)
+{
 //    cv::Mat image = cv::imread(cv::String("pictures/picture2.jpg"));
 //    Configure configure;
 //    //configure.startConfiguration();
@@ -23,8 +24,23 @@ int main() {
 //            break;
 //        }
 //    }
-	FileReader fileReader("./batchInput.txt");
-	fileReader.readFile();
-	fileReader.getInputQueue();
-    return 0;
+
+	bool batchMode = false;
+	if (argc == 2)
+	{
+		FileReader fileReader(argv[1]);
+		fileReader.readFile();
+		std::queue<std::pair<std::string, std::string>> inputQueue =
+				fileReader.getInputQueue();
+		batchMode = true;
+		while (!inputQueue.empty())
+		{
+			std::cout << inputQueue.front().first << std::endl;
+			inputQueue.pop();
+		}
+	}else
+	{
+		Parser parser;
+	}
+	return 0;
 }
