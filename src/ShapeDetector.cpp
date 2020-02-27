@@ -5,6 +5,7 @@
 
 #define SQUARE_MARGE_PIXELS 30
 #define CIRCLE_MARGE_PIXELS 30
+#define DOT_MARGE 0.1
 
 ShapeDetector::ShapeDetector() {
 
@@ -16,7 +17,6 @@ ShapeDetector::~ShapeDetector() {
 
 bool ShapeDetector::isCircle(std::vector<cv::Point>& approx, std::vector<cv::Vec3f>& circles) {
     for(int i = 0; i < circles.size(); i++) {
-        std::cout << "radius " << circles.at(i)[2] << std::endl;  
         bool match = true;
         for(int y = 0; y < approx.size(); y++) {
             // we check if all points are in the circle
@@ -33,8 +33,32 @@ bool ShapeDetector::isCircle(std::vector<cv::Point>& approx, std::vector<cv::Vec
     return false;
 }
 
+bool ShapeDetector::isRectangularShape(std::vector<cv::Point>& approx) {
+    int nrOf90DegreesAngles = 0;
+    if(approx.size() >= 4) {
+        int nextPoint = 1;
+        for(int i = 0; i < approx.size(); i++) {
+            cv::Vec2f vector1(approx.at(nextPoint).x - approx.at(i).x, approx.at(nextPoint).y - approx.at(i).y);
+            for(int y = 0; y < approx.size(); y++) {
+                if(y != nextPoint && i != y) {
+                    cv::Vec2f vector2(approx.at(y).x - approx.at(i).x, approx.at(y).y - approx.at(i).y);
+                    double dot = ((vector1[0] * vector2[0]) + (vector1[1] * vector2[1])) / (sqrt(pow(vector1[0], 2) + pow(vector1[1], 2)) * sqrt(pow(vector2[0], 2) + pow(vector2[1], 2)));
+                    if((dot >= 0 && dot - DOT_MARGE <= 0) ||(dot <= 0 && dot + DOT_MARGE >= 0)) {
+                        nrOf90DegreesAngles += 1;
+                    }
+                }
+            }
+            if(nextPoint >= approx.size()-1) {
+                nextPoint = 0;
+            } else {
+                nextPoint++;
+            }
+        }
+    }
+    return nrOf90DegreesAngles >= 4;
+}
+
 bool ShapeDetector::isSquare(std::vector<cv::Point>& approx) {
-    std::cout << "start" << std::endl;
     if(approx.size() >= 4) {
         std::vector<double> foundValues;
         for(int i = 0; i < approx.size(); i++) {
@@ -57,7 +81,6 @@ bool ShapeDetector::isSquare(std::vector<cv::Point>& approx) {
             for(int q = 0; q < foundValues.size(); q++) {
                 if(q != y) {
                     int lineDistance = ceil(foundValues.at(q) - foundValues.at(y));
-                    std::cout << "y, q: " << y << "," << q << " : " << foundValues.at(y) << "," << foundValues.at(q) << std::endl;
                     if(lineDistance >= (-1 * SQUARE_MARGE_PIXELS) && lineDistance <= SQUARE_MARGE_PIXELS) {
                         nrOfMatchingLength++;
                     }
@@ -68,7 +91,6 @@ bool ShapeDetector::isSquare(std::vector<cv::Point>& approx) {
             }
         }
     }
-    std::cout << "end" << std::endl;
     return false;
 }
 
@@ -79,7 +101,7 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
     cv::Mat imageContours = cv::Mat::zeros( image.size(), CV_8UC3 );
     cv::RNG rng(12345);
 
-    HoughCircles(image, circles, cv::HOUGH_GRADIENT, 1, 3, 100, 1, 1080);
+    HoughCircles(image, circles, cv::HOUGH_GRADIENT, 2, 50, 35, 10, 100, 400);
 
     findContours(image, imgCountours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_NONE);
 
@@ -87,15 +109,13 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
         std::vector<cv::Point> approx;
         approxPolyDP(cv::Mat(imgCountours.at(i)), approx, cv::arcLength(cv::Mat(imgCountours.at(i)), true)*0.02, true);
 
-        std::cout << "imgCountours size: " << approx.size() << std::endl;
-
         if(std::fabs(cv::contourArea(imgCountours.at(i)) >= 100) && 
         isContourConvex(approx)) {
             if((approx.size() == 3 && typeOfShape == "triangle") ||
             ((approx.size() >= 4 && approx.size() <= 6) &&
-                ((typeOfShape == "square" && isSquare(approx)) ||
-                (typeOfShape == "rectangle" && !isSquare(approx)) ||
-                (typeOfShape == "semiCircle" && isCircle(approx, circles)))) ||
+                ((typeOfShape == "square" && isSquare(approx) && isRectangularShape(approx)) ||
+                (typeOfShape == "rectangle" && !isSquare(approx) && isRectangularShape(approx)) ||
+                (typeOfShape == "semiCircle" && isCircle(approx, circles) && !isRectangularShape(approx)))) ||
             (approx.size() > 6 && isCircle(approx, circles) && typeOfShape == "circle")) { // circle or semi circel 
                 cv::Scalar color = cv::Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
                 drawContours(imageContours, imgCountours, (int)i, color, 2, cv::LINE_8, hierarchy, 0 );

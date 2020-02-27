@@ -4,7 +4,7 @@ OBJDIR    =   obj
 SOURCE    =   $(wildcard ${SRCDIR}/*.cpp)
 OBJ       =   $(addprefix $(OBJDIR)/, $(patsubst %.cpp, %.o, $(subst $(SRCDIR)/, ,$(SOURCE))))
 #define libs to use
-LIBS      =   -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_photo
+LIBS      =   -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -lopencv_highgui -lopencv_videoio -lopencv_photo -pthread
 TARGET    =   application
 
 .PHONY: all clean

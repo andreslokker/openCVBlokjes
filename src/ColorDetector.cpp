@@ -18,7 +18,7 @@ cv::Mat ColorDetector::detectColor(cv::Mat& image, const std::string& color) {
 
     cvtColor(blurredImage, blurredImage, cv::COLOR_BGR2HSV);
     // please change this line so that it takes the config values
-    cv::inRange(blurredImage, cv::Scalar(0, 96, 0), cv::Scalar(180, 255, 255), tresholdImage);
+    cv::inRange(blurredImage, cv::Scalar(99, 84, 0), cv::Scalar(117, 255, 255), tresholdImage);
 
     cv::erode(tresholdImage, tresholdImage, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(9,9), cv::Point(-1,-1)));
     cv::dilate(tresholdImage, tresholdImage, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(9,9), cv::Point(-1,-1)));
