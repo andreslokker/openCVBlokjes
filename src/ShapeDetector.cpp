@@ -129,7 +129,7 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
                 cv::Scalar color = cv::Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
                 drawContours(imageContours, imgContours, (int)i, color, 2, cv::LINE_8, hierarchy, 0 );
                 circle(imageContours, mc[i], 4, color, -1, 8, 0);
-                cv::putText(imageContours, std::to_string(cX) + " " + std::to_string(cY), cv::Point2f(cX - 20, cY -20), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
+                cv::putText(imageContours, std::to_string(int(cX)) + " " + std::to_string(int(cY)), cv::Point2f(cX - 20, cY -20), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
             }
         }
     }
