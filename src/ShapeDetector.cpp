@@ -95,21 +95,30 @@ bool ShapeDetector::isSquare(std::vector<cv::Point>& approx) {
 }
 
 cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShape) {
-    std::vector<std::vector<cv::Point>> imgCountours;
+    std::vector<std::vector<cv::Point>> imgContours;
     std::vector<cv::Vec4i> hierarchy;
     std::vector<cv::Vec3f> circles;
     cv::Mat imageContours = cv::Mat::zeros( image.size(), CV_8UC3 );
     cv::RNG rng(12345);
-
     HoughCircles(image, circles, cv::HOUGH_GRADIENT, 2, 50, 35, 10, 100, 400);
 
-    findContours(image, imgCountours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_NONE);
+    findContours(image, imgContours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_NONE);
+    std::vector<cv::Moments> mu(imgContours.size());
+    for(unsigned short i = 0; i < imgContours.size(); i++)
+    {
+    	mu[i] = moments(imgContours[i], false);
+    }
 
-    for(int i = 0; i < imgCountours.size(); i++) {
+    std::vector<cv::Point2f> mc(imgContours.size());
+
+    for(int i = 0; i < imgContours.size(); i++) {
+    	double cX = mu[i].m10/mu[i].m00;
+    	double cY = mu[i].m01/mu[i].m00;
+    	mc[i] = cv::Point2f( cX, cY);
         std::vector<cv::Point> approx;
-        approxPolyDP(cv::Mat(imgCountours.at(i)), approx, cv::arcLength(cv::Mat(imgCountours.at(i)), true)*0.02, true);
+        approxPolyDP(cv::Mat(imgContours.at(i)), approx, cv::arcLength(cv::Mat(imgContours.at(i)), true)*0.02, true);
 
-        if(std::fabs(cv::contourArea(imgCountours.at(i)) >= 100) && 
+        if(std::fabs(cv::contourArea(imgContours.at(i)) >= 100) &&
         isContourConvex(approx)) {
             if((approx.size() == 3 && typeOfShape == "triangle") ||
             ((approx.size() >= 4 && approx.size() <= 6) &&
@@ -118,7 +127,9 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
                 (typeOfShape == "semiCircle" && isCircle(approx, circles) && !isRectangularShape(approx)))) ||
             (approx.size() > 6 && isCircle(approx, circles) && typeOfShape == "circle")) { // circle or semi circel 
                 cv::Scalar color = cv::Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
-                drawContours(imageContours, imgCountours, (int)i, color, 2, cv::LINE_8, hierarchy, 0 );
+                drawContours(imageContours, imgContours, (int)i, color, 2, cv::LINE_8, hierarchy, 0 );
+                circle(imageContours, mc[i], 4, color, -1, 8, 0);
+                cv::putText(imageContours, std::to_string(cX) + " " + std::to_string(cY), cv::Point2f(cX - 20, cY -20), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
             }
         }
     }

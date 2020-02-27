@@ -3,7 +3,7 @@
 #include <iostream>
 
 InputHandler::InputHandler(std::mutex* inputQueueMutex) :
-		inputQueueMutex(inputQueueMutex), thread1(&InputHandler::run, this)
+		inputQueueMutex(inputQueueMutex), thread1(&InputHandler::run, this), mode("interactiveMode")
 {
 
 }
@@ -101,11 +101,23 @@ void InputHandler::run()
 {
 	while (true)
 	{
-		readCommandLine();
+		if(mode == "interactiveMode") readCommandLine();
+		if(mode == "batchMode") readFile(inputFile);
+
 	}
 }
 
 std::queue<std::pair<std::string, std::string> >& InputHandler::getInputQueue()
 {
 	return inputQueue;
+}
+
+void InputHandler::setMode(const std::string& mode)
+{
+	this->mode = mode;
+}
+
+void InputHandler::setInputFile(const std::string& inputFile)
+{
+	this->inputFile = inputFile;
 }

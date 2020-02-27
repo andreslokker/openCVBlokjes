@@ -41,17 +41,24 @@ void threadFunc(InputHandler& inputHandler) {
     }
 }
 
-int main() {
+int main(int argc, char **argv)
+{
     Configure configure;
     //configure.startConfiguration();
 
     InputHandler inputHandler(&inputQueueMutex);
-    cv::VideoCapture cap;
-    int deviceID = 2;
-    cap.open(deviceID);
-    cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
-    cap.set(CV_CAP_PROP_FRAME_HEIGHT,720);
-    cap.read(image);
+    if(argc == 2)
+    {
+    	inputHandler.setMode("batchMode");
+    	inputHandler.setInputFile(argv[1]);
+    }
+//    cv::VideoCapture cap;
+//    int deviceID = 0;
+//    cap.open(deviceID);
+//    cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
+//    cap.set(CV_CAP_PROP_FRAME_HEIGHT,720);
+    image = cv::imread("./blokjes.jpg");
+//    cap.read(image);
     image.copyTo(finalImage);
     image.copyTo(thresholdImage);
 
@@ -61,7 +68,7 @@ int main() {
         millis = std::chrono::system_clock::now();
         std::chrono::duration<double> duration = millis - previousMillisMain;
         if(duration.count() > 0.03) {
-            cap.read(image);
+//            cap.read(image);
             cv::imshow("start image", image);
             cv::imshow("tresholdimage", thresholdImage);
             cv::imshow("image", finalImage);
