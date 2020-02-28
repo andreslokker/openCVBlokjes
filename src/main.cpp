@@ -9,9 +9,6 @@ int main(int argc, char** argv) {
     InputHandler inputHandler(&argumentParser);
     ObjectDetector objectDetector(&inputHandler, &argumentParser);
     
-    Configure configure(&objectDetector);
-    //configure.startConfiguration();
-
     inputHandler.start();
     objectDetector.start();
     objectDetector.showImages();

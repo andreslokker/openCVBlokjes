@@ -2,6 +2,7 @@
 #include "ObjectDetector.hpp"
 #include "ColorDetector.hpp"
 #include "ShapeDetector.hpp"
+#include "Configure.hpp"
 #include <chrono>
 #include <iostream>
 
@@ -12,6 +13,8 @@ ObjectDetector::ObjectDetector(InputHandler* inputHandler, ArgumentParser* argum
     cap.read(image);
     thresholdImage = cv::Mat::zeros(image.size(), CV_8UC3);
     finalImage = cv::Mat::zeros(image.size(), CV_8UC3);
+	Configure configure(this);
+	configure.startConfiguration();
 }
 
 ObjectDetector::~ObjectDetector() {
@@ -39,9 +42,12 @@ void ObjectDetector::detectBatch() {
     inputHandler->getMutex().lock();
     std::cout << inputHandler->getInputVector().size() << std::endl;
     for(int i = 0; i < inputHandler->getInputVector().size(); i++) {
+    	Configure configure(this);
+    	configure.startConfiguration();
+    	configure.readConfiguration();
         std::pair<std::string, std::string> goal = inputHandler->getInputVector().at(i);
         ColorDetector colorDetector;
-        thresholdImage = colorDetector.detectColor(image, goal.second);
+        thresholdImage = colorDetector.detectColor(image, configure.getColorConfiguration(goal.second));
         ShapeDetector shapeDetector;
         cv::Mat image = shapeDetector.detectShape(thresholdImage, goal.first);
         finalImage += image;
@@ -66,8 +72,10 @@ void ObjectDetector::detectObjects() {
             }
             inputHandler->getMutex().unlock();
             if(goal.first != "" && goal.second != "") {
+            	Configure configure(this);
+            	configure.readConfiguration();
                 ColorDetector colorDetector;
-                thresholdImage = colorDetector.detectColor(image, goal.second);
+                thresholdImage = colorDetector.detectColor(image, configure.getColorConfiguration(goal.second));
                 ShapeDetector shapeDetector;
                 finalImage = shapeDetector.detectShape(thresholdImage, goal.first);
             }
