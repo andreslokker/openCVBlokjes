@@ -1,28 +1,20 @@
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/highgui.hpp"
-
-using namespace cv;
+#include "ArgumentParser.hpp"
+#include "Configure.hpp"
+#include "ObjectDetector.hpp"
+#include "InputHandler.hpp"
 
 int main(int argc, char** argv) {
-    namedWindow("normal picture");
-    namedWindow("img detected");
-    String imageName("pictures/picture.png");
-    Mat img = imread(imageName);
-    Mat imgHsv;
-    Mat imgTreshold;
-    cvtColor(img, imgHsv, COLOR_BGR2HSV);
-    inRange(imgHsv, Scalar(0, 30, 0), Scalar(10, 255, 255), imgTreshold);
+    ArgumentParser argumentParser;
+    argumentParser.parseArguments(argc, argv);
+    InputHandler inputHandler(&argumentParser);
+    ObjectDetector objectDetector(&inputHandler, &argumentParser);
+    
+    Configure configure(&objectDetector);
+    //configure.startConfiguration();
 
-    while(true) {
-        imshow("normal picture", img);
-        imshow("img detected", imgTreshold);
-
-        char key = (char) waitKey(30);
-        if (key == 'q' || key == 27) {
-            break;
-        }
-    }
+    inputHandler.start();
+    objectDetector.start();
+    objectDetector.showImages();
 
     return 0;
 }

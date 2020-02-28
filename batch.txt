@@ -1,0 +1,2 @@
+rectangle blue
+rectangle red
