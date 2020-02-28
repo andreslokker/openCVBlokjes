@@ -1,5 +1,7 @@
 #ifndef CONFIGURE_HPP
 #define CONFIGURE_HPP
+
+#include "ObjectDetector.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
@@ -19,7 +21,7 @@ typedef struct {
 
 class Configure {
     public:
-        Configure();
+        Configure(ObjectDetector* objectDetector);
         virtual ~Configure();
         void startConfiguration();
         static void onTrackbar(int, void*);
@@ -29,6 +31,7 @@ class Configure {
         static cv::Mat picture;
         static cv::Mat inRangePicture;
         static int currentSlider;
+        ObjectDetector* objectDetector;
 };
 
 #endif

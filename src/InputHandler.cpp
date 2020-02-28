@@ -2,8 +2,7 @@
 #include <fstream>
 #include <iostream>
 
-InputHandler::InputHandler(std::mutex* inputQueueMutex) : inputQueueMutex(inputQueueMutex), thread1(&InputHandler::run, this) {
-
+InputHandler::InputHandler(ArgumentParser* argumentParser) : argumentParser(argumentParser) {
 }
 
 InputHandler::~InputHandler() {
@@ -33,34 +32,58 @@ void InputHandler::parseLine(const std::string& line) {
         color = input.substr(input.find(" ") + input.find(" ") + 3);
 
     }
-    inputQueueMutex->lock();
-    inputQueue.push(std::make_pair(shape, color));
-    inputQueueMutex->unlock();
+    
+    if(shape != "" || color != "") {
+        inputVectorMutex.lock();
+        inputVector.push_back(std::make_pair(shape, color));
+        inputVectorMutex.unlock();
+    }
 }
 
 void InputHandler::readFile(const std::string& filename) {
     std::ifstream myfile(filename);
 	std::string input;
+
 	if (myfile.is_open()) {
 		while (std::getline(myfile, input)) {
             parseLine(input);
 		}
+        finishedFileReading = true;
 	}
 }
 
 void InputHandler::readCommandLine() {
     std::string input;
     std::getline(std::cin, input);
-    parseLine(input);
+    if(!input.empty()) {
+        inputVectorMutex.lock();
+        inputVector.clear();
+        inputVectorMutex.unlock();
+        parseLine(input);
+    }
+}
+
+void InputHandler::start() {
+    threadPtr = std::make_unique<std::thread>(&InputHandler::run, this);
 }
 
 void InputHandler::run() {
+    if(argumentParser->getMode() == Mode::BATCH) {
+        readFile(argumentParser->getLocation());
+    }
     while(true) {
         readCommandLine();
     }
 }
 
+ std::vector<std::pair<std::string, std::string> >& InputHandler::getInputVector() {
+    return inputVector;
+ }
 
- std::queue<std::pair<std::string, std::string> >& InputHandler::getInputQueue() {
-    return inputQueue;
+ std::mutex& InputHandler::getMutex() {
+    return inputVectorMutex;
+ }
+
+ bool InputHandler::getFinishedFileReading() {
+    return finishedFileReading;
  }

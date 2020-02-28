@@ -98,7 +98,7 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
     std::vector<std::vector<cv::Point>> imgCountours;
     std::vector<cv::Vec4i> hierarchy;
     std::vector<cv::Vec3f> circles;
-    cv::Mat imageContours = cv::Mat::zeros( image.size(), CV_8UC3 );
+    cv::Mat imageContours = cv::Mat::zeros(image.size(), CV_8UC3);
     cv::RNG rng(12345);
 
     HoughCircles(image, circles, cv::HOUGH_GRADIENT, 2, 50, 35, 10, 100, 400);

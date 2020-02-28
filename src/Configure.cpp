@@ -7,7 +7,7 @@ cv::Mat Configure::picture;
 int Configure::currentSlider = 0;
 cv::Mat Configure::inRangePicture;
 
-Configure::Configure() {
+Configure::Configure(ObjectDetector* objectDetector) : objectDetector(objectDetector) {
 
 }
 
@@ -28,11 +28,6 @@ void Configure::onTrackbar(int, void*) {
 }
 
 void Configure::startConfiguration() {
-    cv::VideoCapture cap;
-    int deviceID = 2;
-    cap.open(deviceID);
-    cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
-    cap.set(CV_CAP_PROP_FRAME_HEIGHT,720);
     for(int i = 0; i < NR_OF_COLORS; i++) {
         colorConfiguration[i].color = colors[i];
         std::string windowName = "configuring window " + colorConfiguration[i].color;
@@ -47,7 +42,7 @@ void Configure::startConfiguration() {
         std::cout << "press space to finish color: " << colorConfiguration[i].color << std::endl;
 
         while(true) {
-            cap.read(picture);
+            picture = objectDetector->getWebcamImage();
             picture.copyTo(inRangePicture);
             void* b;
             onTrackbar(int(), b);
@@ -64,5 +59,4 @@ void Configure::startConfiguration() {
 
         currentSlider++;
     }
-    cap.release();
 }
