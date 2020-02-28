@@ -6,3 +6,4 @@ pictures
 .project
 
 *.o
+.settings/
