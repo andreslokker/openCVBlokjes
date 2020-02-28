@@ -31,11 +31,6 @@ cv::Mat& ObjectDetector::getWebcamImage() {
 }
 
 void ObjectDetector::detectBatch() {
-    std::cout << "ik kom hier" << std::endl;
-    while(!inputHandler->getFinishedFileReading()) {
-        std::cout << "waiting" << std::endl;
-    }
-
     inputHandler->getMutex().lock();
     std::cout << inputHandler->getInputVector().size() << std::endl;
     for(int i = 0; i < inputHandler->getInputVector().size(); i++) {

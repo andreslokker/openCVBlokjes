@@ -6,11 +6,15 @@
 int main(int argc, char** argv) {
     ArgumentParser argumentParser;
     argumentParser.parseArguments(argc, argv);
-    InputHandler inputHandler(&argumentParser);
+    InputHandler inputHandler;
     ObjectDetector objectDetector(&inputHandler, &argumentParser);
     
     Configure configure(&objectDetector);
     //configure.startConfiguration();
+
+    if(argumentParser.getMode() == Mode::BATCH) {
+        inputHandler.readFile(argumentParser.getLocation());
+    }
 
     inputHandler.start();
     objectDetector.start();
