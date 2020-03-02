@@ -10,20 +10,17 @@
 
 class InputHandler {
     public:
-        InputHandler(ArgumentParser* argumentParser);
+        InputHandler();
         virtual ~InputHandler();
         void start();
         void run();
+        void readFile(const std::string& filename);
         std::vector<std::pair<std::string, std::string> >& getInputVector();
         std::mutex& getMutex();
-        bool getFinishedFileReading();
     private:
         void parseLine(const std::string& line);
-        void readFile(const std::string& filename);
         void readCommandLine();
 
-        bool finishedFileReading = false;
-        ArgumentParser* argumentParser;
         std::vector<std::pair<std::string, std::string> >inputVector;
         std::mutex inputVectorMutex;
         std::unique_ptr<std::thread> threadPtr;

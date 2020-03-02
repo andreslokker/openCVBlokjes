@@ -1,2 +1,2 @@
+square green
 rectangle blue
-rectangle red

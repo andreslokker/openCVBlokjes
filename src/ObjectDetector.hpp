@@ -2,6 +2,7 @@
 #define OBJECTDETECTOR_HPP
 
 #include "InputHandler.hpp"
+#include "Configure.hpp"
 #include <opencv2/videoio.hpp>
 #include <memory>
 #include <thread>
@@ -25,6 +26,7 @@ class ObjectDetector {
         cv::Mat finalImage;
         InputHandler* inputHandler;
         ArgumentParser* argumentParser;
+        Configure configure;
         std::unique_ptr<std::thread> threadPtr;
 };
 

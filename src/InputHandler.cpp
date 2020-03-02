@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 
-InputHandler::InputHandler(ArgumentParser* argumentParser) : argumentParser(argumentParser) {
+InputHandler::InputHandler() {
 }
 
 InputHandler::~InputHandler()
@@ -83,7 +83,6 @@ void InputHandler::readFile(const std::string& filename)
 		while (std::getline(myfile, input)) {
             parseLine(input);
 		}
-        finishedFileReading = true;
 	}
 }
 
@@ -103,22 +102,15 @@ void InputHandler::start() {
 }
 
 void InputHandler::run() {
-    if(argumentParser->getMode() == Mode::BATCH) {
-        readFile(argumentParser->getLocation());
-    }
     while(true) {
         readCommandLine();
     }
 }
 
- std::vector<std::pair<std::string, std::string> >& InputHandler::getInputVector() {
+std::vector<std::pair<std::string, std::string> >& InputHandler::getInputVector() {
     return inputVector;
- }
+}
 
- std::mutex& InputHandler::getMutex() {
+std::mutex& InputHandler::getMutex() {
     return inputVectorMutex;
- }
-
- bool InputHandler::getFinishedFileReading() {
-    return finishedFileReading;
- }
+}

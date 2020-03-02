@@ -17,17 +17,13 @@ ShapeDetector::~ShapeDetector() {
 
 bool ShapeDetector::isCircle(std::vector<cv::Point>& approx, std::vector<cv::Vec3f>& circles) {
     for(int i = 0; i < circles.size(); i++) {
-        bool match = true;
         for(int y = 0; y < approx.size(); y++) {
             // we check if all points are in the circle
-            if(!(((approx.at(y).x - circles.at(i)[0]) * (approx.at(y).x - circles.at(i)[0])) +  
+            if((((approx.at(y).x - circles.at(i)[0]) * (approx.at(y).x - circles.at(i)[0])) +  
             ((approx.at(y).y - circles.at(i)[1]) * (approx.at(y).y - circles.at(i)[1])) 
-            < (circles.at(i)[2] * circles.at(i)[2] + CIRCLE_MARGE_PIXELS))) {
-                match = false;
+            <= (circles.at(i)[2] * circles.at(i)[2] + CIRCLE_MARGE_PIXELS))) {
+                return true;
             }
-        }
-        if(match) {
-            return true;
         }
     }
     return false;
@@ -94,7 +90,8 @@ bool ShapeDetector::isSquare(std::vector<cv::Point>& approx) {
     return false;
 }
 
-cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShape) {
+cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShape, Timer& timer, Mode mode) {
+    bool found = false;
     std::vector<std::vector<cv::Point>> imgContours;
     std::vector<cv::Vec4i> hierarchy;
     std::vector<cv::Vec3f> circles;
@@ -125,12 +122,33 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
                 ((typeOfShape == "square" && isSquare(approx) && isRectangularShape(approx)) ||
                 (typeOfShape == "rectangle" && !isSquare(approx) && isRectangularShape(approx)) ||
                 (typeOfShape == "semiCircle" && isCircle(approx, circles) && !isRectangularShape(approx)))) ||
-            (approx.size() > 6 && isCircle(approx, circles) && typeOfShape == "circle")) { // circle or semi circel 
+            (approx.size() > 6 && isCircle(approx, circles) && typeOfShape == "circle")) {
+                found = true; 
+                timer.stop();
                 cv::Scalar color = cv::Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
                 drawContours(imageContours, imgContours, (int)i, color, 2, cv::LINE_8, hierarchy, 0 );
                 circle(imageContours, mc[i], 4, color, -1, 8, 0);
-                cv::putText(imageContours, std::to_string(int(cX)) + " " + std::to_string(int(cY)), cv::Point2f(cX - 20, cY -20), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
+                if(mode == Mode::INTERACTIVE) {
+                    cv::putText(imageContours, std::to_string(int(cX)) + " " + std::to_string(int(cY)), cv::Point2f(cX - 20, cY -20), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
+                    cv::putText(imageContours, "Area: " + std::to_string((int)(cv::contourArea(approx))), cv::Point2f(cX - 20, cY + 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
+                    cv::putText(imageContours, "Time to find: " + std::to_string(timer.getDuration()), cv::Point2f(cX - 20, cY + 40), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
+                } else {
+                    std::cout << typeOfShape << " Center point: " << std::to_string(int(cX)) << " " << std::to_string(int(cY)) << std::endl;
+                    std::cout << typeOfShape << " Area: " << std::to_string((int) (cv::contourArea(approx))) << std::endl;
+                    std::cout << typeOfShape << " Time to find: " << std::to_string(timer.getDuration()) << std::endl;
+                }
             }
+        }
+    }
+
+    if(!found) {
+        timer.stop();
+        if(mode == Mode::BATCH) {
+            std::cout << typeOfShape << " not found" << std::endl;
+            std::cout << typeOfShape << " Time to find: " << std::to_string(timer.getDuration()) << std::endl;
+        } else {
+            cv::putText(imageContours, typeOfShape + " not found", cv::Point2f(imageContours.size().width/2, imageContours.size().height/2), CV_FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 2);
+            std::cout << typeOfShape << " Time to find: " << std::to_string(timer.getDuration()) << std::endl;
         }
     }
 

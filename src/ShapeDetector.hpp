@@ -1,6 +1,9 @@
 #ifndef SHAPEDETECTOR_HPP
 #define SHAPEDETECTOR_HPP
 
+#include "Timer.hpp"
+#include "InputHandler.hpp"
+#include "ArgumentParser.hpp"
 #include <string>
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgproc.hpp"
@@ -18,7 +21,7 @@ class ShapeDetector {
         /* 
         @brief this function will try to detect a given type of shape
         */
-        cv::Mat detectShape(cv::Mat& image, const std::string& typeOfShape);
+        cv::Mat detectShape(cv::Mat& image, const std::string& typeOfShape, Timer& timer, Mode mode);
 };
 
 #endif

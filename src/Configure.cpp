@@ -1,4 +1,5 @@
 #include "Configure.hpp"
+#include "ObjectDetector.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -76,6 +77,8 @@ void Configure::startConfiguration() {
 			char c = (char) cv::waitKey(30);
 			if (c == ' ') {
 				cv::destroyWindow(windowName);
+				cv::destroyWindow("configuring window");
+				cv::destroyWindow("Camera window");
 
 				myConfigFile
 						<< colorConfiguration[i].color << " "

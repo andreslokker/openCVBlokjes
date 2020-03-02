@@ -2,19 +2,19 @@
 #include "ObjectDetector.hpp"
 #include "ColorDetector.hpp"
 #include "ShapeDetector.hpp"
-#include "Configure.hpp"
+#include "Timer.hpp"
 #include <chrono>
 #include <iostream>
 
-ObjectDetector::ObjectDetector(InputHandler* inputHandler, ArgumentParser* argumentParser) : inputHandler(inputHandler), argumentParser(argumentParser) {
+ObjectDetector::ObjectDetector(InputHandler* inputHandler, ArgumentParser* argumentParser) : inputHandler(inputHandler), argumentParser(argumentParser), configure(this) {
     cap.open(webcamId);
     cap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
     cap.set(cv::CAP_PROP_FRAME_HEIGHT,720);
     cap.read(image);
     thresholdImage = cv::Mat::zeros(image.size(), CV_8UC3);
     finalImage = cv::Mat::zeros(image.size(), CV_8UC3);
-	Configure configure(this);
-	configure.startConfiguration();
+	//configure.startConfiguration();
+    configure.readConfiguration();
 }
 
 ObjectDetector::~ObjectDetector() {
@@ -34,23 +34,15 @@ cv::Mat& ObjectDetector::getWebcamImage() {
 }
 
 void ObjectDetector::detectBatch() {
-    std::cout << "ik kom hier" << std::endl;
-    while(!inputHandler->getFinishedFileReading()) {
-        std::cout << "waiting" << std::endl;
-    }
-
     inputHandler->getMutex().lock();
-    std::cout << inputHandler->getInputVector().size() << std::endl;
     for(int i = 0; i < inputHandler->getInputVector().size(); i++) {
-    	Configure configure(this);
-    	configure.startConfiguration();
-    	configure.readConfiguration();
+        Timer timer;
         std::pair<std::string, std::string> goal = inputHandler->getInputVector().at(i);
         ColorDetector colorDetector;
-        thresholdImage = colorDetector.detectColor(image, configure.getColorConfiguration(goal.second));
+        thresholdImage = colorDetector.detectColor(image, configure.getColorConfiguration(goal.second), timer);
         ShapeDetector shapeDetector;
-        cv::Mat image = shapeDetector.detectShape(thresholdImage, goal.first);
-        finalImage += image;
+        cv::Mat image = shapeDetector.detectShape(thresholdImage, goal.first, timer, argumentParser->getMode());
+        cv::add(finalImage, image, finalImage);
     }
     inputHandler->getMutex().unlock();
 }
@@ -72,12 +64,11 @@ void ObjectDetector::detectObjects() {
             }
             inputHandler->getMutex().unlock();
             if(goal.first != "" && goal.second != "") {
-            	Configure configure(this);
-            	configure.readConfiguration();
+                Timer timer;
                 ColorDetector colorDetector;
-                thresholdImage = colorDetector.detectColor(image, configure.getColorConfiguration(goal.second));
+                thresholdImage = colorDetector.detectColor(image, configure.getColorConfiguration(goal.second), timer);
                 ShapeDetector shapeDetector;
-                finalImage = shapeDetector.detectShape(thresholdImage, goal.first);
+                finalImage = shapeDetector.detectShape(thresholdImage, goal.first, timer, argumentParser->getMode());
             }
             previousMillis = std::chrono::system_clock::now();
         }

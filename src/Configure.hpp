@@ -1,13 +1,14 @@
 #ifndef CONFIGURE_HPP
 #define CONFIGURE_HPP
 
-#include "ObjectDetector.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
 #include <string>
 
 #define NR_OF_COLORS 6
+
+class ObjectDetector;
 
 typedef struct {
     std::string color;
