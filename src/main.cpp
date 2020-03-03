@@ -9,9 +9,6 @@ int main(int argc, char** argv) {
     InputHandler inputHandler;
     ObjectDetector objectDetector(&inputHandler, &argumentParser);
     
-    Configure configure(&objectDetector);
-    //configure.startConfiguration();
-
     if(argumentParser.getMode() == Mode::BATCH) {
         inputHandler.readFile(argumentParser.getLocation());
     }

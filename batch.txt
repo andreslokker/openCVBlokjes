@@ -1,2 +1,3 @@
-rectangle blue
+square red
 rectangle red
+#circle yellow

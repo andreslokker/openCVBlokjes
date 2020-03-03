@@ -1,6 +1,8 @@
 #ifndef COLORDETECTOR_HPP
 #define COLORDETECTOR_HPP
 
+#include "Timer.hpp"
+#include "Configure.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
@@ -11,7 +13,7 @@ class ColorDetector {
         ColorDetector();
         virtual ~ColorDetector();
 
-        cv::Mat detectColor(cv::Mat& image, const std::string& color);
+        cv::Mat detectColor(cv::Mat& image,const ColorConfiguration& colorConfiguration, Timer& timer);
 };
 
 #endif
