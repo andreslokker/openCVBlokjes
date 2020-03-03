@@ -4,7 +4,7 @@
 #include <cmath>
 
 #define SQUARE_MARGE_PIXELS 30
-#define CIRCLE_MARGE_PIXELS 30
+#define CIRCLE_MARGE_PIXELS 10
 #define DOT_MARGE 0.1
 
 ShapeDetector::ShapeDetector() {
@@ -18,14 +18,15 @@ ShapeDetector::~ShapeDetector() {
 bool ShapeDetector::isCircle(std::vector<cv::Point>& approx, std::vector<cv::Vec3f>& circles) {
     for(int i = 0; i < circles.size(); i++) {
         for(int y = 0; y < approx.size(); y++) {
-            // we check if all points are in the circle
-            if((((approx.at(y).x - circles.at(i)[0]) * (approx.at(y).x - circles.at(i)[0])) +  
-            ((approx.at(y).y - circles.at(i)[1]) * (approx.at(y).y - circles.at(i)[1])) 
-            <= (circles.at(i)[2] * circles.at(i)[2] + CIRCLE_MARGE_PIXELS))) {
-                return true;
+            for(int z = 0; z < approx.size(); z++) {
+                if(y != z && circles.at(i)[0] >= approx.at(y).x + CIRCLE_MARGE_PIXELS && circles.at(i)[0] <= approx.at(z).x + CIRCLE_MARGE_PIXELS &&
+                   circles.at(i)[1] >= approx.at(y).y + CIRCLE_MARGE_PIXELS&& circles.at(i)[1] <= approx.at(z).y + CIRCLE_MARGE_PIXELS) {
+                       return true;
+                   }
             }
         }
     }
+
     return false;
 }
 
@@ -97,7 +98,7 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
     std::vector<cv::Vec3f> circles;
     cv::Mat imageContours = cv::Mat::zeros(image.size(), CV_8UC3);
     cv::RNG rng(12345);
-    HoughCircles(image, circles, cv::HOUGH_GRADIENT, 2, 50, 35, 10, 100, 400);
+    HoughCircles(image, circles, cv::HOUGH_GRADIENT, 2, 50, 50, 30, 20, 500);
 
     findContours(image, imgContours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_NONE);
     std::vector<cv::Moments> mu(imgContours.size());
@@ -113,15 +114,15 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
     	double cY = mu[i].m01/mu[i].m00;
     	mc[i] = cv::Point2f( cX, cY);
         std::vector<cv::Point> approx;
-        approxPolyDP(cv::Mat(imgContours.at(i)), approx, cv::arcLength(cv::Mat(imgContours.at(i)), true)*0.02, true);
+        approxPolyDP(cv::Mat(imgContours.at(i)), approx, cv::arcLength(cv::Mat(imgContours.at(i)), true)*0.03, true);
 
         if(std::fabs(cv::contourArea(imgContours.at(i)) >= 100) &&
         isContourConvex(approx)) {
             if((approx.size() == 3 && typeOfShape == "triangle") ||
             ((approx.size() >= 4 && approx.size() <= 6) &&
                 ((typeOfShape == "square" && isSquare(approx) && isRectangularShape(approx)) ||
-                (typeOfShape == "rectangle" && !isSquare(approx) && isRectangularShape(approx)) ||
-                (typeOfShape == "semiCircle" && isCircle(approx, circles) && !isRectangularShape(approx)))) ||
+                (typeOfShape == "rectangle" && !isSquare(approx) && isRectangularShape(approx)))) ||
+            ((approx.size() == 5 || approx.size() == 6) && typeOfShape == "semiCircle" && isCircle(approx, circles) && !isRectangularShape(approx)) ||
             (approx.size() > 6 && isCircle(approx, circles) && typeOfShape == "circle")) {
                 found = true; 
                 timer.stop();
@@ -129,7 +130,7 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
                 drawContours(imageContours, imgContours, (int)i, color, 2, cv::LINE_8, hierarchy, 0 );
                 circle(imageContours, mc[i], 4, color, -1, 8, 0);
                 if(mode == Mode::INTERACTIVE) {
-                    cv::putText(imageContours, std::to_string(int(cX)) + " " + std::to_string(int(cY)), cv::Point2f(cX - 20, cY -20), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
+                    cv::putText(imageContours, "Center point: " + std::to_string(int(cX)) + " " + std::to_string(int(cY)), cv::Point2f(cX - 20, cY -20), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
                     cv::putText(imageContours, "Area: " + std::to_string((int)(cv::contourArea(approx))), cv::Point2f(cX - 20, cY + 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
                     cv::putText(imageContours, "Time to find: " + std::to_string(timer.getDuration()), cv::Point2f(cX - 20, cY + 40), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
                 } else {

@@ -21,8 +21,8 @@ cv::Mat ColorDetector::detectColor(cv::Mat& image, const ColorConfiguration& col
     cvtColor(blurredImage, blurredImage, cv::COLOR_BGR2HSV);
     cv::inRange(blurredImage, cv::Scalar(colorConfiguration.hsvHMin, colorConfiguration.hsvSMin, colorConfiguration.hsvVMin), cv::Scalar(colorConfiguration.hsvHMax, colorConfiguration.hsvSMax, colorConfiguration.hsvVMax), tresholdImage);
 
-    cv::erode(tresholdImage, tresholdImage, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(15,15), cv::Point(-1,-1)));
-    cv::dilate(tresholdImage, tresholdImage, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(15,15), cv::Point(-1,-1)));
+    cv::erode(tresholdImage, tresholdImage, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3,3), cv::Point(-1,-1)));
+    cv::dilate(tresholdImage, tresholdImage, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3,3), cv::Point(-1,-1)));
 
     return tresholdImage;
 }

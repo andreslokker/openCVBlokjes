@@ -28,6 +28,7 @@ class ObjectDetector {
         ArgumentParser* argumentParser;
         Configure configure;
         std::unique_ptr<std::thread> threadPtr;
+        std::mutex imageMutex;
 };
 
 #endif
