@@ -18,7 +18,7 @@ void InputHandler::parseLine(const std::string& line)
 	}
 	std::string input = line.substr(0, line.find("#"));
 	int count = 0;
-	for (int i = 0; i < input.length(); i++)
+	for (std::size_t i = 0; i < input.length(); i++)
 	{
 		if (isspace(input.at(i)))
 		{
