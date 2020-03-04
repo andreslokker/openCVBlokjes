@@ -35,7 +35,7 @@ cv::Mat& ObjectDetector::getWebcamImage() {
 
 void ObjectDetector::detectBatch() {
     inputHandler->getMutex().lock(); // the input vector with commands gets locked
-    for(int i = 0; i < inputHandler->getInputVector().size(); i++) {
+    for(std::size_t i = 0; i < inputHandler->getInputVector().size(); i++) {
         Timer timer;
         std::pair<std::string, std::string> goal = inputHandler->getInputVector().at(i);
         imageMutex.lock(); // the image variables get locked
@@ -51,7 +51,7 @@ void ObjectDetector::detectBatch() {
 
 void ObjectDetector::detectObjects() {
     std::chrono::system_clock::time_point previousMillis = std::chrono::system_clock::now();
-    int currentObject = 0;
+    std::size_t currentObject = 0;
     std::pair<std::string, std::string> goal;
     while(true) {
         std::chrono::system_clock::time_point millis = std::chrono::system_clock::now();

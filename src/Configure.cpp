@@ -67,7 +67,7 @@ void Configure::startConfiguration() {
 		while (true) {
 			picture = objectDetector->getWebcamImage();
 			picture.copyTo(inRangePicture);
-			void* b;
+			void* b = NULL;
 			onTrackbar(int(), b);
 
 			cv::namedWindow("configuring window");

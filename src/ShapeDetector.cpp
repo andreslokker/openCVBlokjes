@@ -16,11 +16,11 @@ ShapeDetector::~ShapeDetector() {
 }
 
 bool ShapeDetector::isCircle(std::vector<cv::Point>& approx, std::vector<cv::Vec3f>& circles) {
-    for(int i = 0; i < circles.size(); i++) {
-        for(int y = 0; y < approx.size(); y++) {
-            for(int z = 0; z < approx.size(); z++) {
-                if(y != z && circles.at(i)[0] >= approx.at(y).x + CIRCLE_MARGE_PIXELS && circles.at(i)[0] <= approx.at(z).x + CIRCLE_MARGE_PIXELS &&
-                   circles.at(i)[1] >= approx.at(y).y + CIRCLE_MARGE_PIXELS&& circles.at(i)[1] <= approx.at(z).y + CIRCLE_MARGE_PIXELS) {
+    for(std::size_t i = 0; i < circles.size(); i++) {
+        for(std::size_t y = 0; y < approx.size(); y++) {
+            for(std::size_t z = 0; z < approx.size(); z++) {
+                if(y != z && circles.at(i)[0] >= (float) approx.at(y).x + CIRCLE_MARGE_PIXELS && circles.at(i)[0] <= (float) approx.at(z).x + CIRCLE_MARGE_PIXELS &&
+                   circles.at(i)[1] >= (float) approx.at(y).y + CIRCLE_MARGE_PIXELS && circles.at(i)[1] <= (float) approx.at(z).y + CIRCLE_MARGE_PIXELS) {
                        return true;
                    }
             }
@@ -33,12 +33,12 @@ bool ShapeDetector::isCircle(std::vector<cv::Point>& approx, std::vector<cv::Vec
 bool ShapeDetector::isRectangularShape(std::vector<cv::Point>& approx) {
     int nrOf90DegreesAngles = 0;
     if(approx.size() >= 4) {
-        int nextPoint = 1;
-        for(int i = 0; i < approx.size(); i++) {
-            cv::Vec2f vector1(approx.at(nextPoint).x - approx.at(i).x, approx.at(nextPoint).y - approx.at(i).y);
-            for(int y = 0; y < approx.size(); y++) {
+        std::size_t nextPoint = 1;
+        for(std::size_t i = 0; i < approx.size(); i++) {
+            cv::Vec2f vector1((float) (approx.at(nextPoint).x - approx.at(i).x), (float) (approx.at(nextPoint).y - approx.at(i).y));
+            for(std::size_t y = 0; y < approx.size(); y++) {
                 if(y != nextPoint && i != y) {
-                    cv::Vec2f vector2(approx.at(y).x - approx.at(i).x, approx.at(y).y - approx.at(i).y);
+                    cv::Vec2f vector2((float) (approx.at(y).x - approx.at(i).x), (float) (approx.at(y).y - approx.at(i).y));
                     double dot = ((vector1[0] * vector2[0]) + (vector1[1] * vector2[1])) / (sqrt(pow(vector1[0], 2) + pow(vector1[1], 2)) * sqrt(pow(vector2[0], 2) + pow(vector2[1], 2)));
                     if((dot >= 0 && dot - DOT_MARGE <= 0) ||(dot <= 0 && dot + DOT_MARGE >= 0)) {
                         nrOf90DegreesAngles += 1;
@@ -58,26 +58,26 @@ bool ShapeDetector::isRectangularShape(std::vector<cv::Point>& approx) {
 bool ShapeDetector::isSquare(std::vector<cv::Point>& approx) {
     if(approx.size() >= 4) {
         std::vector<double> foundValues;
-        for(int i = 0; i < approx.size(); i++) {
-            for(int y = i+1; y < approx.size(); y++) {
+        for(std::size_t i = 0; i < approx.size(); i++) {
+            for(std::size_t y = i+1; y < approx.size(); y++) {
                 foundValues.push_back(cv::norm(cv::Mat(approx.at(i)), cv::Mat(approx.at(y))));
             }
         }
 
         for (int k = 0; k < 2; k++) {
-            int posToRemove = 0;
-            for(int i = 0; i < foundValues.size(); i++) {
+            std::size_t posToRemove = 0;
+            for(std::size_t i = 0; i < foundValues.size(); i++) {
                 if(foundValues.at(i) > foundValues.at(posToRemove))
                     posToRemove = i;
             }
             foundValues.erase(foundValues.begin() + posToRemove);
         }
 
-        for(int y = 0; y < foundValues.size(); y++) {
+        for(std::size_t y = 0; y < foundValues.size(); y++) {
             int nrOfMatchingLength = 0;
-            for(int q = 0; q < foundValues.size(); q++) {
+            for(std::size_t q = 0; q < foundValues.size(); q++) {
                 if(q != y) {
-                    int lineDistance = ceil(foundValues.at(q) - foundValues.at(y));
+                    double lineDistance = ceil(foundValues.at(q) - foundValues.at(y));
                     if(lineDistance >= (-1 * SQUARE_MARGE_PIXELS) && lineDistance <= SQUARE_MARGE_PIXELS) {
                         nrOfMatchingLength++;
                     }
@@ -109,9 +109,9 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
 
     std::vector<cv::Point2f> mc(imgContours.size());
 
-    for(int i = 0; i < imgContours.size(); i++) {
-    	double cX = mu[i].m10/mu[i].m00;
-    	double cY = mu[i].m01/mu[i].m00;
+    for(std::size_t i = 0; i < imgContours.size(); i++) {
+    	float cX = (float) (mu[i].m10/mu[i].m00);
+    	float cY = (float) (mu[i].m01/mu[i].m00);
     	mc[i] = cv::Point2f( cX, cY);
         std::vector<cv::Point> approx;
         approxPolyDP(cv::Mat(imgContours.at(i)), approx, cv::arcLength(cv::Mat(imgContours.at(i)), true)*0.03, true);
@@ -148,7 +148,7 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
             std::cout << typeOfShape << " not found" << std::endl;
             std::cout << typeOfShape << " Time to find: " << std::to_string(timer.getDuration()) << std::endl;
         } else {
-            cv::putText(imageContours, typeOfShape + " not found", cv::Point2f(imageContours.size().width/2, imageContours.size().height/2), CV_FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 2);
+            cv::putText(imageContours, typeOfShape + " not found", cv::Point2f((float) (imageContours.size().width/2), (float) (imageContours.size().height/2)), CV_FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 2);
             std::cout << typeOfShape << " Time to find: " << std::to_string(timer.getDuration()) << std::endl;
         }
     }
