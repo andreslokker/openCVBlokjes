@@ -13,7 +13,7 @@ ObjectDetector::ObjectDetector(InputHandler* inputHandler, ArgumentParser* argum
     cap.read(image);
     thresholdImage = cv::Mat::zeros(image.size(), CV_8UC3);
     finalImage = cv::Mat::zeros(image.size(), CV_8UC3);
-	configure.startConfiguration();
+	//configure.startConfiguration();
     configure.readConfiguration();
 }
 
