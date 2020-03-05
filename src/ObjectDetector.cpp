@@ -25,7 +25,8 @@ void ObjectDetector::start() {
     if(argumentParser->getMode() == Mode::INTERACTIVE)
         threadPtr = std::make_unique<std::thread>(&ObjectDetector::detectObjects, this);
     else
-        threadPtr = std::make_unique<std::thread>(&ObjectDetector::detectBatch, this);    
+        threadPtr = std::make_unique<std::thread>(&ObjectDetector::detectBatch, this);   
+    threadPtr->detach();
 }
 
 cv::Mat& ObjectDetector::getWebcamImage() {

@@ -99,6 +99,7 @@ void InputHandler::readCommandLine() {
 
 void InputHandler::start() {
     threadPtr = std::make_unique<std::thread>(&InputHandler::run, this);
+	threadPtr->detach();
 }
 
 void InputHandler::run() {
