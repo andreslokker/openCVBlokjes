@@ -126,13 +126,13 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
             (approx.size() > 6 && isCircle(approx, circles) && typeOfShape == "circle")) {
                 found = true; 
                 timer.stop();
-                cv::Scalar color = cv::Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
+                cv::Scalar color = cv::Scalar(255, 255, 255);
                 drawContours(imageContours, imgContours, (int)i, color, 2, cv::LINE_8, hierarchy, 0 );
                 circle(imageContours, mc[i], 4, color, -1, 8, 0);
                 if(mode == Mode::INTERACTIVE) {
-                    cv::putText(imageContours, "Center point: " + std::to_string(int(cX)) + " " + std::to_string(int(cY)), cv::Point2f(cX - 20, cY -20), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
-                    cv::putText(imageContours, "Area: " + std::to_string((int)(cv::contourArea(approx))), cv::Point2f(cX - 20, cY + 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
-                    cv::putText(imageContours, "Time to find: " + std::to_string(timer.getDuration()), cv::Point2f(cX - 20, cY + 40), CV_FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
+                    cv::putText(imageContours, "Center point: " + std::to_string(int(cX)) + " " + std::to_string(int(cY)), cv::Point2f(cX - 20, cY -20), CV_FONT_HERSHEY_SIMPLEX, 0.8, color, 2);
+                    cv::putText(imageContours, "Area: " + std::to_string((int)(cv::contourArea(approx))), cv::Point2f(cX - 20, cY + 20), CV_FONT_HERSHEY_SIMPLEX, 0.8, color, 2);
+                    cv::putText(imageContours, "Time to find: " + std::to_string(timer.getDuration()), cv::Point2f(cX - 20, cY + 40), CV_FONT_HERSHEY_SIMPLEX, 0.8, color, 2);
                 } else {
                     std::cout << typeOfShape << " Center point: " << std::to_string(int(cX)) << " " << std::to_string(int(cY)) << std::endl;
                     std::cout << typeOfShape << " Area: " << std::to_string((int) (cv::contourArea(approx))) << std::endl;
@@ -148,7 +148,7 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
             std::cout << typeOfShape << " not found" << std::endl;
             std::cout << typeOfShape << " Time to find: " << std::to_string(timer.getDuration()) << std::endl;
         } else {
-            cv::putText(imageContours, typeOfShape + " not found", cv::Point2f((float) (imageContours.size().width/2), (float) (imageContours.size().height/2)), CV_FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 2);
+            cv::putText(imageContours, typeOfShape + " not found", cv::Point2f((float) (imageContours.size().width/2), (float) (imageContours.size().height/2)), CV_FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(255, 255, 255), 2);
             std::cout << typeOfShape << " Time to find: " << std::to_string(timer.getDuration()) << std::endl;
         }
     }
