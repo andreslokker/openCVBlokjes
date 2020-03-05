@@ -30,7 +30,7 @@ class Configure {
          * 
          * @param objectDetector 
          */
-        Configure(ObjectDetector* objectDetector);
+        explicit Configure(ObjectDetector* objectDetector);
         
         /**
          * @brief Destroy the Configure object
@@ -72,7 +72,7 @@ class Configure {
          * @param color string which defines which color should be returned 
          * @return ColorConfiguration 
          */
-	static ColorConfiguration getColorConfiguration(std::string color);
+	static ColorConfiguration getColorConfiguration(std::string& color);
 
     private:
         static std::string colors[NR_OF_COLORS];
