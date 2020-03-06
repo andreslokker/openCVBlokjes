@@ -2,7 +2,12 @@
 #define ARGUMENTPARSER_HPP
 
 #include <string>
-
+/**
+ * @brief Enum Mode
+ * Different types of modes the application can run in.
+ * Interactive: custom input while application is running
+ * Batch: input from batch file
+ */
 enum Mode {
     NONE,
     INTERACTIVE,

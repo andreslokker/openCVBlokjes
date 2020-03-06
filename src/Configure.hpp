@@ -48,7 +48,7 @@ class Configure {
          * @param void*
          */
         static void onTrackbar(int, void*);
-
+  
         /**
          * @brief Line parser, parses the line and puts them into the colorConfiguration
          * Seperates each section of the input by using a " " as delimeter
@@ -56,7 +56,7 @@ class Configure {
          * @param lineCount The line number which is read, puts the input into this position of the colorConfiguration
          */
         static void parseLine(std::string input, unsigned short lineCount);
-
+  
         /**
          * @brief Read the configuration file line by line and calls parseLine function for each line
          * 
@@ -69,7 +69,7 @@ class Configure {
          * @param color string which defines which color should be returned 
          * @return ColorConfiguration 
          */
-	static ColorConfiguration getColorConfiguration(std::string& color);
+	      static ColorConfiguration getColorConfiguration(std::string& color);
 
     private:
         static std::string colors[NR_OF_COLORS];
