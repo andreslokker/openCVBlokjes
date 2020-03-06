@@ -21,6 +21,7 @@ bool ShapeDetector::isCircle(std::vector<cv::Point>& approx, std::vector<cv::Vec
             for(std::size_t z = 0; z < approx.size(); z++) {
                 if(y != z && circles.at(i)[0] >= (float) approx.at(y).x + CIRCLE_MARGE_PIXELS && circles.at(i)[0] <= (float) approx.at(z).x + CIRCLE_MARGE_PIXELS &&
                    circles.at(i)[1] >= (float) approx.at(y).y + CIRCLE_MARGE_PIXELS && circles.at(i)[1] <= (float) approx.at(z).y + CIRCLE_MARGE_PIXELS) {
+                       std::cout << "is circle" << std::endl;
                        return true;
                    }
             }
@@ -52,6 +53,7 @@ bool ShapeDetector::isRectangularShape(std::vector<cv::Point>& approx) {
             }
         }
     }
+    std::cout << (nrOf90DegreesAngles >= 4) << std::endl;
     return nrOf90DegreesAngles >= 4;
 }
 
@@ -115,6 +117,7 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
     	mc[i] = cv::Point2f( cX, cY);
         std::vector<cv::Point> approx;
         approxPolyDP(cv::Mat(imgContours.at(i)), approx, cv::arcLength(cv::Mat(imgContours.at(i)), true)*0.03, true);
+        std::cout << approx.size() << std::endl;
 
         if(std::fabs(cv::contourArea(imgContours.at(i)) >= 100) &&
         isContourConvex(approx)) {

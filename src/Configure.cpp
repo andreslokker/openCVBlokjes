@@ -65,7 +65,9 @@ void Configure::startConfiguration() {
 				<< colorConfiguration[i].color << std::endl;
 
 		while (true) {
+			objectDetector->getImageMutex().lock();
 			picture = objectDetector->getWebcamImage();
+			objectDetector->getImageMutex().unlock();
 			picture.copyTo(inRangePicture);
 			void* b = NULL;
 			onTrackbar(int(), b);

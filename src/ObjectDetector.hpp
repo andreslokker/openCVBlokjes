@@ -54,6 +54,13 @@ class ObjectDetector {
          * 
          */
         void showImages();
+
+        /**
+         * @brief Get the Image Mutex object
+         * 
+         * @return std::mutex& imageMutex
+         */
+        std::mutex& getImageMutex();
     private:
         const int webcamId = 2;
         cv::VideoCapture cap;
