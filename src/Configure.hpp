@@ -22,13 +22,13 @@ typedef struct {
 
 class Configure {
     public:
-        Configure(ObjectDetector* objectDetector);
+        explicit Configure(ObjectDetector* objectDetector);
         virtual ~Configure();
         void startConfiguration();
         static void onTrackbar(int, void*);
-        void parseLine(std::string input, unsigned short lineCount);
+        static void parseLine(std::string input, unsigned short lineCount);
         void readConfiguration();
-	static ColorConfiguration getColorConfiguration(std::string color);
+	static ColorConfiguration getColorConfiguration(std::string& color);
 
     private:
         static std::string colors[NR_OF_COLORS];

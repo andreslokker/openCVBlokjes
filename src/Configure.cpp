@@ -142,7 +142,7 @@ void Configure::readConfiguration()
 	}
 }
 
-ColorConfiguration Configure::getColorConfiguration(std::string color) {
+ColorConfiguration Configure::getColorConfiguration(std::string& color) {
 	for(unsigned short i = 0; i < NR_OF_COLORS; i++)
 	{
 		if(colorConfiguration[i].color == color) return colorConfiguration[i];

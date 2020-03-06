@@ -15,7 +15,7 @@ class ArgumentParser {
         ArgumentParser();
         virtual ~ArgumentParser();
         void parseArguments(int argc, char** argv);
-        Mode getMode();
+        const Mode& getMode() const;
         const std::string& getLocation() const;
     private:
         std::string location;

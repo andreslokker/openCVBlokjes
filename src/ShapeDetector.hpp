@@ -31,7 +31,7 @@ class ShapeDetector {
          * @return true In case the approx is in the found circles
          * @return false In case the approx is not in the found circles
          */
-        bool isCircle(std::vector<cv::Point>& approx, std::vector<cv::Vec3f>& circles);
+        static bool isCircle(std::vector<cv::Point>& approx, std::vector<cv::Vec3f>& circles);
 
         /**
          * @brief This function checks if a given approx has the shape of a rectangle
@@ -40,7 +40,7 @@ class ShapeDetector {
          * @return true In case the approx has the shape of a rectangular shape
          * @return false In case the approx does not has the shape of a rectangular shape
          */
-        bool isRectangularShape(std::vector<cv::Point>& approx);
+        static bool isRectangularShape(std::vector<cv::Point>& approx);
 
         /**
          * @brief This function checks if a given approx has the shape of a square (checks for 4 sides with the same length)
@@ -49,7 +49,7 @@ class ShapeDetector {
          * @return true In case the approx has the shape of a square shape
          * @return false In case the approx does not has the shape of a square shape
          */
-        bool isSquare(std::vector<cv::Point>& approx);
+        static bool isSquare(std::vector<cv::Point>& approx);
 
         /**
          * @brief This function can be used to detect given type of shapes on a given image.
@@ -60,7 +60,7 @@ class ShapeDetector {
          * @param mode Type of application mode, see Enum Mode.
          * @return cv::Mat With the contours of the found shapes.
          */
-        cv::Mat detectShape(cv::Mat& image, const std::string& typeOfShape, Timer& timer, Mode mode);
+        static cv::Mat detectShape(cv::Mat& image, const std::string& typeOfShape, Timer& timer, Mode mode);
 };
 
 #endif

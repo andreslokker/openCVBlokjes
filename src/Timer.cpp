@@ -16,6 +16,6 @@ void Timer::stop() {
     endTime = std::clock();
 }
 
-std::clock_t Timer::getDuration() {
+std::clock_t Timer::getDuration() const {
     return endTime - startTime;
 }

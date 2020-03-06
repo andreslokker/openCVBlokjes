@@ -18,7 +18,7 @@ void ArgumentParser::parseArguments(int argc, char** argv) {
     }
 }
 
-Mode ArgumentParser::getMode() {
+const Mode& ArgumentParser::getMode() const {
     return mode;
 }
 

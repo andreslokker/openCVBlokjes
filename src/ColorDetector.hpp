@@ -13,7 +13,7 @@ class ColorDetector {
         ColorDetector();
         virtual ~ColorDetector();
 
-        cv::Mat detectColor(cv::Mat& image,const ColorConfiguration& colorConfiguration, Timer& timer);
+        static cv::Mat detectColor(cv::Mat& image,const ColorConfiguration& colorConfiguration, Timer& timer);
 };
 
 #endif
