@@ -69,9 +69,12 @@ void InputHandler::parseLine(const std::string& line)
 			}
 		}
 	}
-	inputVectorMutex.lock();
-	inputVector.push_back(std::make_pair(shape, color));
-	inputVectorMutex.unlock();
+
+	if(shape != "" && color != "") {
+		inputVectorMutex.lock();
+		inputVector.push_back(std::make_pair(shape, color));
+		inputVectorMutex.unlock();
+	}
 }
 
 void InputHandler::readFile(const std::string& filename)

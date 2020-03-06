@@ -147,6 +147,5 @@ ColorConfiguration Configure::getColorConfiguration(std::string& color) {
 	{
 		if(colorConfiguration[i].color == color) return colorConfiguration[i];
 	}
-	std::cout << "Color unknown, using red color" << std::endl;
 	return colorConfiguration[0];
 }
