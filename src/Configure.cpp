@@ -65,7 +65,9 @@ void Configure::startConfiguration() {
 				<< colorConfiguration[i].color << std::endl;
 
 		while (true) {
+			objectDetector->getImageMutex().lock();
 			picture = objectDetector->getWebcamImage();
+			objectDetector->getImageMutex().unlock();
 			picture.copyTo(inRangePicture);
 			void* b = NULL;
 			onTrackbar(int(), b);
@@ -145,6 +147,5 @@ ColorConfiguration Configure::getColorConfiguration(std::string& color) {
 	{
 		if(colorConfiguration[i].color == color) return colorConfiguration[i];
 	}
-	std::cout << "Color unknown, using red color" << std::endl;
 	return colorConfiguration[0];
 }

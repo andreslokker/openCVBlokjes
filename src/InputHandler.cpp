@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 
-InputHandler::InputHandler() {
+InputHandler::InputHandler() : enableColorConfig(false) {
 }
 
 InputHandler::~InputHandler()
@@ -69,9 +69,12 @@ void InputHandler::parseLine(const std::string& line)
 			}
 		}
 	}
-	inputVectorMutex.lock();
-	inputVector.push_back(std::make_pair(shape, color));
-	inputVectorMutex.unlock();
+
+	if(shape != "" && color != "") {
+		inputVectorMutex.lock();
+		inputVector.push_back(std::make_pair(shape, color));
+		inputVectorMutex.unlock();
+	}
 }
 
 void InputHandler::readFile(const std::string& filename)
@@ -98,6 +101,11 @@ void InputHandler::readCommandLine() {
 }
 
 void InputHandler::start() {
+	std::string configureColors;
+	std::cout << "configure colors? (Y | N)";
+	std::cin >> configureColors;
+	enableColorConfig = configureColors == "Y" ? true : false;
+
     threadPtr = std::make_unique<std::thread>(&InputHandler::run, this);
 	threadPtr->detach();
 }
@@ -114,4 +122,8 @@ std::vector<std::pair<std::string, std::string> >& InputHandler::getInputVector(
 
 std::mutex& InputHandler::getMutex() {
     return inputVectorMutex;
+}
+
+bool InputHandler::getEnableColorConfig() const {
+	return enableColorConfig;
 }

@@ -116,7 +116,7 @@ cv::Mat ShapeDetector::detectShape(cv::Mat& image, const std::string& typeOfShap
         std::vector<cv::Point> approx;
         approxPolyDP(cv::Mat(imgContours.at(i)), approx, cv::arcLength(cv::Mat(imgContours.at(i)), true)*0.03, true);
 
-        if(std::fabs(cv::contourArea(imgContours.at(i)) >= 100) &&
+        if(std::fabs(cv::contourArea(imgContours.at(i)) >= 200) &&
         isContourConvex(approx)) {
             if((approx.size() == 3 && typeOfShape == "triangle") ||
             ((approx.size() >= 4 && approx.size() <= 6) &&

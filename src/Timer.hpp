@@ -34,7 +34,7 @@ class Timer {
          * 
          * @return std::clock_t duration
          */
-        std::clock_t getDuration();
+        std::clock_t getDuration() const;
     private:
         std::clock_t startTime;
         std::clock_t endTime;

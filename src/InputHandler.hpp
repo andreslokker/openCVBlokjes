@@ -54,6 +54,9 @@ class InputHandler {
          * @return std::mutex& inputVectorMutex
          */
         std::mutex& getMutex();
+
+        bool getEnableColorConfig() const;
+
     private:
         /**
          * @brief This function parses a single line from the batch file and in case of a object + color
@@ -71,6 +74,7 @@ class InputHandler {
         std::vector<std::pair<std::string, std::string> >inputVector;
         std::mutex inputVectorMutex;
         std::unique_ptr<std::thread> threadPtr;
+        bool enableColorConfig;
 };
 
 #endif

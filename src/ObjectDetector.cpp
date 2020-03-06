@@ -13,8 +13,6 @@ ObjectDetector::ObjectDetector(InputHandler* inputHandler, ArgumentParser* argum
     cap.read(image);
     thresholdImage = cv::Mat::zeros(image.size(), CV_8UC3);
     finalImage = cv::Mat::zeros(image.size(), CV_8UC3);
-	//configure.startConfiguration();
-    configure.readConfiguration();
 }
 
 ObjectDetector::~ObjectDetector() {
@@ -22,6 +20,11 @@ ObjectDetector::~ObjectDetector() {
 }
 
 void ObjectDetector::start() {
+    if(inputHandler->getEnableColorConfig()) {
+       configure.startConfiguration();
+    }
+    configure.readConfiguration();
+
     if(argumentParser->getMode() == Mode::INTERACTIVE)
         threadPtr = std::make_unique<std::thread>(&ObjectDetector::detectObjects, this);
     else
@@ -35,17 +38,27 @@ cv::Mat& ObjectDetector::getWebcamImage() {
 }
 
 void ObjectDetector::detectBatch() {
+    std::chrono::system_clock::time_point previousMillis = std::chrono::system_clock::now();
     inputHandler->getMutex().lock(); // the input vector with commands gets locked
-    for(std::size_t i = 0; i < inputHandler->getInputVector().size(); i++) {
-        Timer timer;
-        std::pair<std::string, std::string> goal = inputHandler->getInputVector().at(i);
-        imageMutex.lock(); // the image variables get locked
-        ColorDetector colorDetector;
-        thresholdImage = colorDetector.detectColor(image, configure.getColorConfiguration(goal.second), timer);
-        ShapeDetector shapeDetector;
-        cv::Mat image = shapeDetector.detectShape(thresholdImage, goal.first, timer, argumentParser->getMode());
-        cv::add(finalImage, image, finalImage);
-        imageMutex.unlock();
+    while(true) {
+        std::chrono::system_clock::time_point millis = std::chrono::system_clock::now();
+        std::chrono::duration<double> duration = millis-previousMillis;
+        if(duration.count() > 1) {
+            thresholdImage = cv::Mat::zeros(image.size(), CV_8UC3);
+            finalImage = cv::Mat::zeros(image.size(), CV_8UC3);
+            for(std::size_t i = 0; i < inputHandler->getInputVector().size(); i++) {
+                Timer timer;
+                std::pair<std::string, std::string> goal = inputHandler->getInputVector().at(i);
+                imageMutex.lock(); // the image variables get locked
+                ColorDetector colorDetector;
+                thresholdImage = colorDetector.detectColor(image, configure.getColorConfiguration(goal.second), timer);
+                ShapeDetector shapeDetector;
+                cv::Mat image = shapeDetector.detectShape(thresholdImage, goal.first, timer, argumentParser->getMode());
+                cv::add(finalImage, image, finalImage);
+                imageMutex.unlock();
+            }
+            previousMillis = std::chrono::system_clock::now();
+        }   
     }
     inputHandler->getMutex().unlock();
 }
@@ -57,13 +70,10 @@ void ObjectDetector::detectObjects() {
     while(true) {
         std::chrono::system_clock::time_point millis = std::chrono::system_clock::now();
         std::chrono::duration<double> duration = millis-previousMillis;
-        if(duration.count() > 1) {
+        if(duration.count() > 0.2) {
             inputHandler->getMutex().lock();
             if(currentObject < inputHandler->getInputVector().size()) {
                 goal = inputHandler->getInputVector().at(currentObject);
-                currentObject++;
-            } else {
-                currentObject = 0;
             }
             inputHandler->getMutex().unlock();
             if(goal.first != "" && goal.second != "") {
@@ -100,4 +110,8 @@ void ObjectDetector::showImages() {
             break;
         }
     }
+}
+
+std::mutex& ObjectDetector::getImageMutex() {
+    return imageMutex;
 }

@@ -22,13 +22,13 @@ class ArgumentParser {
         * 
         */
         ArgumentParser();
-        
+
         /**
          * @brief Destroy the Argument Parser object
          * 
          */
         virtual ~ArgumentParser();
-        
+
         /**
          * @brief Parse arguments given when application is launched
          * 
@@ -36,14 +36,14 @@ class ArgumentParser {
          * @param argv 
          */
         void parseArguments(int argc, char** argv);
-       
-        /**
+
+         /**
          * @brief Get the Mode object
          * 
          * @return Mode 
          */
-        Mode getMode();
-        
+        const Mode& getMode() const;
+
         /**
          * @brief Get the Location object
          * 

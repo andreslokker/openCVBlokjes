@@ -15,13 +15,13 @@ class ColorDetector {
          * 
          */
         ColorDetector();
-        
+
         /**
          * @brief Destroy the Color Detector object
          * 
          */
         virtual ~ColorDetector();
-        
+
         /**
          * @brief Filter out the color which is given from the colorconfiguration and present it in a new image
          * 
@@ -30,7 +30,7 @@ class ColorDetector {
          * @param timer  a timer to count how long it takes to find the specific color
          * @return cv::Mat the output image in which the searched color is represented in
          */
-        cv::Mat detectColor(cv::Mat& image,const ColorConfiguration& colorConfiguration, Timer& timer);
+        static cv::Mat detectColor(cv::Mat& image,const ColorConfiguration& colorConfiguration, Timer& timer);
 };
 
 #endif
