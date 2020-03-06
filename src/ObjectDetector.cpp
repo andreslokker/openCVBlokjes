@@ -43,7 +43,7 @@ void ObjectDetector::detectBatch() {
     while(true) {
         std::chrono::system_clock::time_point millis = std::chrono::system_clock::now();
         std::chrono::duration<double> duration = millis-previousMillis;
-        if(duration.count() > 0.5) {
+        if(duration.count() > 1) {
             thresholdImage = cv::Mat::zeros(image.size(), CV_8UC3);
             finalImage = cv::Mat::zeros(image.size(), CV_8UC3);
             for(std::size_t i = 0; i < inputHandler->getInputVector().size(); i++) {
@@ -74,9 +74,6 @@ void ObjectDetector::detectObjects() {
             inputHandler->getMutex().lock();
             if(currentObject < inputHandler->getInputVector().size()) {
                 goal = inputHandler->getInputVector().at(currentObject);
-                currentObject++;
-            } else {
-                currentObject = 0;
             }
             inputHandler->getMutex().unlock();
             if(goal.first != "" && goal.second != "") {
